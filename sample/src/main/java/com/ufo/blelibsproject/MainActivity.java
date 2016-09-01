@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBleManager = BleManager.getInstance(this);
         findViewById(R.id.btn_scan).setOnClickListener(this);
         findViewById(R.id.btn_connect).setOnClickListener(this);
         findViewById(R.id.btn_disconnect).setOnClickListener(this);
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_unreceiver).setOnClickListener(this);
 
         //监听设备以通知方式发过来的数据
+        mBleManager = BleManager.getInstance(this);
         mBleManager.receiver("00001950-0000-1000-8000-00805f9b34fb",
                 "00002a6c-0000-1000-8000-00805f9b34fb", new OnReceiverCallback() {
                     @Override
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         } else if (v.getId() == R.id.btn_disconnect) {
+            //断开连接
             mBleManager.disConnection();
 
         } else if (v.getId() == R.id.btn_notification) {

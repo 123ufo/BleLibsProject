@@ -8,12 +8,12 @@
                 "00002a6c-0000-1000-8000-00805f9b34fb", new OnReceiverCallback() {
                     @Override
                     public void onSuccess(byte[] value) {
-                        System.out.println(TAG + " 接收到的数据:" + new String(value));
+                        Log.d(TAG," 接收到的数据:" + new String(value));
                     }
 
                     @Override
                     public void onFailed(int state) {
-                        System.out.println(TAG + " 接收数据失败" + state);
+                         Log.d(TAG," 接收数据失败" + state);
                     }
                 });
                 
@@ -23,18 +23,18 @@
             mBleManager.scanBleDevices(0, new OnScanCallback() {
                 @Override
                 public void onSuccess() {
-                    System.out.println(TAG + " 扫描完成");
+                     Log.d(TAG," 扫描完成");
                 }
 
                 @Override
                 public void onFailed(int fail) {
-                    System.out.println(TAG + "扫描失败" + fail);
+                     Log.d(TAG,"扫描失败" + fail);
                 }
 
                 @Override
                 public void onScanning(BluetoothDevice device, int rssi, byte[] scanRecord) {
                     //每扫描一个设备回调一次此方法
-                    System.out.println(TAG + " 设备:" + device.getName() + "地址: " + device.getAddress());
+                     Log.d(TAG," 设备:" + device.getName() + "地址: " + device.getAddress());
                 }
             });
             
@@ -43,12 +43,12 @@
             mBleManager.connection(0, "CB:A5:AF:B8:AD:58", new OnConnectCallback() {
                 @Override
                 public void onSuccess(BluetoothGatt gatt) {
-                    System.out.println(TAG + " 连接成功");
+                    Log.d(TAG," 连接成功");
                 }
 
                 @Override
                 public void onFailed(int state) {
-                    System.out.println(TAG + " 连接断开: " + state);
+                    Log.d(TAG," 连接断开: " + state);
                 }
             });
             
@@ -59,12 +59,12 @@
                     "00002902-0000-1000-8000-00805f9b34fb", true, new OnNotificationCallback() {
                         @Override
                         public void onSuccess() {
-                            System.out.println(TAG + " 通知设置成功");
+                            Log.d(TAG," 通知设置成功");
                         }
 
                         @Override
                         public void onFailed(int state) {
-                            System.out.println(TAG + " 通知设置失败代码为:" + state);
+                             Log.d(TAG," 通知设置失败代码为:" + state);
                         }
                     });
                     
@@ -75,12 +75,12 @@
                     "{S5:1}", new OnWriteCallback() {
                         @Override
                         public void onSuccess() {
-                            System.out.println(TAG + " 写成功");
+                             Log.d(TAG," 写成功");
                         }
 
                         @Override
                         public void onFailed(int state) {
-                            System.out.println(TAG + " 写失败:" + state);
+                            Log.d(TAG," 写失败:" + state);
                         }
                     });
                     
