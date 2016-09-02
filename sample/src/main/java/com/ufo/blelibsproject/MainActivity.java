@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_notification).setOnClickListener(this);
         findViewById(R.id.btn_write).setOnClickListener(this);
         findViewById(R.id.btn_unreceiver).setOnClickListener(this);
+        findViewById(R.id.btn_character).setOnClickListener(this);
 
         //监听设备以通知方式发过来的数据
         mBleManager = BleManager.getInstance(this);
@@ -118,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == R.id.btn_unreceiver) {
             //移除接收数据
             mBleManager.unReceiver("00001950-0000-1000-8000-00805f9b34fb", "00002a6c-0000-1000-8000-00805f9b34fb");
+        }else if(v.getId() == R.id.btn_character){
+            //获取一个特征
+            mBleManager.getBluetoothGattCharacteristic("00001950-0000-1000-8000-00805f9b34fb","00002a6c-0000-1000-8000-00805f9b34fb");
         }
 
     }

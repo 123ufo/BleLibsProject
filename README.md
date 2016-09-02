@@ -2,7 +2,9 @@
 一个封装蓝牙4.0的帮助库
 
   
-        //监听设备以通知方式发过来的数据
+###1.
+  
+         //监听设备以通知方式发过来的数据
         mBleManager = BleManager.getInstance(this);
         mBleManager.receiver("00001950-0000-1000-8000-00805f9b34fb",
                 "00002a6c-0000-1000-8000-00805f9b34fb", new OnReceiverCallback() {
@@ -17,7 +19,7 @@
                     }
                 });
                 
-                
+###2.                
                 
                  //扫描设备
             mBleManager.scanBleDevices(0, new OnScanCallback() {
@@ -38,6 +40,7 @@
                 }
             });
             
+###3.
             
             //连接设备
             mBleManager.connection(0, "CB:A5:AF:B8:AD:58", new OnConnectCallback() {
@@ -52,7 +55,8 @@
                 }
             });
             
-            
+###4.
+           
             //设置通知,true为打开通知,false为关
             mBleManager.notification("00001950-0000-1000-8000-00805f9b34fb",
                     "00002a6c-0000-1000-8000-00805f9b34fb",
@@ -68,7 +72,8 @@
                         }
                     });
                     
-                    
+###5.       
+             
                      //写入数据
             mBleManager.writer("00001950-0000-1000-8000-00805f9b34fb",
                     "00002a6d-0000-1000-8000-00805f9b34fb",
@@ -83,10 +88,16 @@
                             Log.d(TAG," 写失败:" + state);
                         }
                     });
+###6.                   
                     
                      //移除接收数据
             mBleManager.unReceiver("00001950-0000-1000-8000-00805f9b34fb", "00002a6c-0000-1000-8000-00805f9b34fb");
+###7.           
             
-            
+             //获取一个特征
+             mBleManager.getBluetoothGattCharacteristic("00001950-0000-1000-8000-00805f9b34fb","00002a6c-0000-1000-8000-00805f9b34fb");
+###8.          
              //断开连接
             mBleManager.disConnection();
+            
+            
