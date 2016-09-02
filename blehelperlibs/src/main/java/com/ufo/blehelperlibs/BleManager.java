@@ -35,8 +35,14 @@ import java.util.UUID;
 
 /**
  * Created by sz on 2016/8/31.
+ * 描述:这是一个封装了对蓝牙Ble通信的一个管理类,此类为单例,可能过{@link BleManager#getInstance}
+ * 获取该类的对象,然后对设备进行如:扫描{@link BleManager#scanBleDevices(int, OnScanCallback)};
+ * 连接设备{@link BleManager#connection(int, String, OnConnectCallback)};断开连接{@link BleManager#disConnection()};
+ * 设置通知{@link BleManager#notification(String, String, String, boolean, OnNotificationCallback)};
+ * 写操作{@link BleManager#writer(String, String, String, OnWriteCallback)};
+ * 接收设备以通知形式发过来的数据{@link BleManager#receiver(String, String, OnReceiverCallback)}等等
  */
-public class BleManager {
+public final class BleManager {
     private static final String TAG = "BleManager";
     /**
      * 默认扫描蓝牙设备的持续时间为5秒
@@ -88,7 +94,7 @@ public class BleManager {
     }
 
     /**
-     * 初始化
+     * 初始化.获取完本类的实例后要调此方法进行初始化.
      */
     private void init() {
         if (null == mBluetoothManager) {
@@ -122,6 +128,19 @@ public class BleManager {
             return mAdapter.isEnabled();
         }
         return false;
+    }
+
+    /**
+     * 返回GATT连接对象,可用它来进行扩展对和实现更多的对设备的操作
+     * 功能,
+     *
+     * @return {@link BleManager#mBluetoothGatt}
+     */
+    public BluetoothGatt getBluetoothGatt() {
+        if (null != mBluetoothGatt) {
+            return mBluetoothGatt;
+        }
+        return null;
     }
 
     /**
@@ -226,6 +245,7 @@ public class BleManager {
             return;
         }
         mBluetoothGatt.disconnect();
+        Log.d(TAG, "disConnection Ble ");
     }
 
     /**
@@ -395,23 +415,8 @@ public class BleManager {
         String requestKey = Md5Utils.MD5(serviceUUID.concat(characterUUID).concat(descriptorUUID));
         mNotificationRequestQueue.set(requestKey, callback);
 
-        //找服务
-        Map<String, BluetoothGattCharacteristic> stringBluetoothGattCharacteristicMap = servicesMap.get(serviceUUID);
-        if (null == stringBluetoothGattCharacteristicMap) {
-            callback.onFailed(OnNotificationCallback.FAILED_INVALID_SERVICE);
-            mNotificationRequestQueue.removeRequest(requestKey);
-            return;
-        }
-
         //找特征
-        Set<Map.Entry<String, BluetoothGattCharacteristic>> entries = stringBluetoothGattCharacteristicMap.entrySet();
-        BluetoothGattCharacteristic gattCharacteristic = null;
-        for (Map.Entry<String, BluetoothGattCharacteristic> entry : entries) {
-            if (characterUUID.equals(entry.getKey())) {
-                gattCharacteristic = entry.getValue();
-                break;
-            }
-        }
+        BluetoothGattCharacteristic gattCharacteristic = getBluetoothGattCharacteristic(serviceUUID, characterUUID);
         if (null == gattCharacteristic) {
             callback.onFailed(OnNotificationCallback.FAILED_INVALID_CHARACTER);
             mNotificationRequestQueue.removeRequest(requestKey);
@@ -469,24 +474,8 @@ public class BleManager {
         String requestKey = Md5Utils.MD5(serviceUUID.concat(characterUUID));
         mWriterRequestQueue.set(requestKey, callback);
 
-
-        //找服务
-        Map<String, BluetoothGattCharacteristic> stringBluetoothGattCharacteristicMap = servicesMap.get(serviceUUID);
-        if (null == stringBluetoothGattCharacteristicMap) {
-            callback.onFailed(OnWriteCallback.FAILED_INVALID_SERVICE);
-            mWriterRequestQueue.removeRequest(requestKey);
-            return;
-        }
-
         //找特征
-        Set<Map.Entry<String, BluetoothGattCharacteristic>> entries = stringBluetoothGattCharacteristicMap.entrySet();
-        BluetoothGattCharacteristic gattCharacteristic = null;
-        for (Map.Entry<String, BluetoothGattCharacteristic> entry : entries) {
-            if (characterUUID.equals(entry.getKey())) {
-                gattCharacteristic = entry.getValue();
-                break;
-            }
-        }
+        BluetoothGattCharacteristic gattCharacteristic = getBluetoothGattCharacteristic(serviceUUID, characterUUID);
         if (null == gattCharacteristic) {
             callback.onFailed(OnWriteCallback.FAILED_INVALID_CHARACTER);
             mWriterRequestQueue.removeRequest(requestKey);
@@ -546,5 +535,43 @@ public class BleManager {
         String requestKey = Md5Utils.MD5(serviceUUID.concat(characterUUID));
         mReceiverRequestQueue.removeRequest(requestKey);
     }
+
+    /**
+     * 根据服务UUID和特征UUID,获取一个特征{@link BluetoothGattCharacteristic}
+     *
+     * @param serviceUUID   服务UUID
+     * @param characterUUID 特征UUID
+     */
+    public BluetoothGattCharacteristic getBluetoothGattCharacteristic(String serviceUUID, String characterUUID) {
+        if (TextUtils.isEmpty(serviceUUID) || TextUtils.isEmpty(characterUUID)) {
+            throw new IllegalArgumentException("ServiceUUID and CharacterUUID  can not null");
+        }
+        if (!isEnable()) {
+            throw new IllegalArgumentException(" Bluetooth is no enable please call BluetoothAdapter.enable()");
+        }
+        if (null == mBluetoothGatt) {
+            return null;
+        }
+
+        //找服务
+        Map<String, BluetoothGattCharacteristic> bluetoothGattCharacteristicMap = servicesMap.get(serviceUUID);
+        if (null == bluetoothGattCharacteristicMap) {
+            return null;
+        }
+
+        //找特征
+        Set<Map.Entry<String, BluetoothGattCharacteristic>> entries = bluetoothGattCharacteristicMap.entrySet();
+        BluetoothGattCharacteristic gattCharacteristic = null;
+        for (Map.Entry<String, BluetoothGattCharacteristic> entry : entries) {
+            if (characterUUID.equals(entry.getKey())) {
+                gattCharacteristic = entry.getValue();
+                break;
+            }
+        }
+
+        return gattCharacteristic;
+
+    }
+
 
 }
